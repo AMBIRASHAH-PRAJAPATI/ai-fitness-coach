@@ -11,11 +11,10 @@ const geminiModel = "gemini-2.5-pro";
 const exerciseSchema = {
   type: Type.OBJECT,
   properties: {
-    name: { type: Type.STRING },
-    sets: { type: Type.NUMBER },
-    reps: { type: Type.NUMBER },
-    rest: { type: Type.STRING },
-    duration: { type: Type.STRING },
+    name: { type: Type.STRING, description: "Name of the exercise."},
+    sets: { type: Type.NUMBER,  description: "Number of sets, e.g., '3'."},
+    reps: { type: Type.NUMBER, description: "Number of repetitions, e.g., '10-12'." },
+    rest: { type: Type.STRING, description: "Rest period between sets, e.g., '60s'." },
   },
   required: ['name', 'sets', 'reps', 'rest'],
 };
@@ -39,9 +38,9 @@ const workoutDaySchema = {
 const mealSchema = {
   type: Type.OBJECT,
   properties: {
-    name: { type: Type.STRING },
-    description: { type: Type.STRING },
-    calories: { type: Type.NUMBER },
+    name: { type: Type.STRING, description: "Meal type. Must be one of: 'Breakfast', 'Lunch', 'Dinner', 'Snacks'." },
+    description: { type: Type.STRING, description: "Description of the meal."},
+    calories: { type: Type.NUMBER, description: "Estimated calories, e.g., '450'."},
   },
   required: ['name', 'description', 'calories'],
 };
@@ -89,14 +88,23 @@ const responseSchema = {
 
 // Generates the full fitness plan
 export const generateFitnessPlan = async (userDetails: UserDetails): Promise<FitnessPlan> => {
-  try {
-    const prompt = `
+  const prompt = `
       You are a professional fitness and nutrition coach.
-      Create a highly personalized 7-day fitness and diet plan plan based on the provided user data in JSON format.
+      Create a highly personalized 7-day fitness and diet plan plan based on the provided user.
       Ensure the plan is detailed, realistic, and tailored to their specific inputs.
 
       **User Data:**
-      ${JSON.stringify(userDetails, null, 2)}
+       - Name: ${userDetails.name}
+       - Age: ${userDetails.age}
+       - Gender: ${userDetails.gender}
+       - Height: ${userDetails.height} cm
+       - Weight: ${userDetails.weight} kg
+       - Fitness Goal: ${userDetails.fitnessGoal.replace('-', ' ')}
+       - Fitness Level: ${userDetails.fitnessLevel}
+       - Workout Location: ${userDetails.workoutLocation}
+       - Dietary Preference: ${userDetails.dietaryPreference}
+       - Medical History: ${userDetails.medicalHistory || 'None specified'}
+       - Stress Level: ${userDetails.stressLevel || 'None specified'}
 
       **Instructions & Constraints:**
       1.  **Personalization:** Meticulously tailor the plan to the user's specific goals, fitness level, preferences, and constraints (like medical history and workout location).
@@ -114,6 +122,7 @@ export const generateFitnessPlan = async (userDetails: UserDetails): Promise<Fit
       - Strictly adhere to the provided JSON schema.
       - Do NOT include any text, markdown, or comments outside of the JSON structure.
     `;
+  try {
     // Initialize the Gemini client
     const genAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await genAI.models.generateContent({

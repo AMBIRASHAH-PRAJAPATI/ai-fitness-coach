@@ -17,7 +17,6 @@ export interface Exercise {
   sets: number;
   reps: number;
   rest: string;
-  duration?: string;
 }
 
 export interface WorkoutDay {
@@ -28,7 +27,7 @@ export interface WorkoutDay {
 }
 
 export interface Meal {
-  name: string;
+  name: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
   description: string;
   calories: number;
 }
