@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import { UserDetails, FitnessPlan } from './types';
+import { FormData, FitnessPlan } from './types';
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEY not found");
@@ -87,7 +87,7 @@ const responseSchema = {
 };
 
 // Generates the full fitness plan
-export const generateFitnessPlan = async (userDetails: UserDetails): Promise<FitnessPlan> => {
+export const generateFitnessPlan = async (userDetails: FormData): Promise<FitnessPlan> => {
   const prompt = `
       You are a professional fitness and nutrition coach.
       Create a highly personalized 7-day fitness and diet plan plan based on the provided user.

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { generateFitnessPlan } from '@/lib/planService';
-import { UserDetails } from '@/lib/types';
+import { FormData } from '@/lib/types';
 
 export async function POST(request: Request) {
   try {
-    const userDetails = await request.json() as UserDetails;
+    const userDetails = await request.json() as FormData;
     // Simple validation
     if (!userDetails.name || !userDetails.age || !userDetails.gender || !userDetails.height || !userDetails.weight || !userDetails.fitnessGoal || !userDetails.fitnessLevel || !userDetails.workoutLocation || !userDetails.dietaryPreference) {
       return NextResponse.json(
