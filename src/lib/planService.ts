@@ -70,6 +70,7 @@ const responseSchema = {
         saturday: workoutDaySchema,
         sunday: workoutDaySchema,
       },
+      required: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
     },
     dietPlan: {
       type: Type.OBJECT,
@@ -82,8 +83,10 @@ const responseSchema = {
         saturday: dietDaySchema,
         sunday: dietDaySchema,
       },
+      required: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
     },
   },
+  required: ['workoutPlan', 'dietPlan'],
 };
 
 // Generates the full fitness plan

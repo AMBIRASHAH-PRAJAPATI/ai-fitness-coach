@@ -3,14 +3,14 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { prompt } = await request.json();;
-    if (!prompt) {
+    const { text } = await request.json();
+    if (!text) {
       return NextResponse.json(
-        { error: "Prompt is required" },
+        { error: "Text is required" },
         { status: 400 }
       );
     }
-    const image = await generateImage(prompt);
+    const image = await generateImage(text);
     return NextResponse.json({ image });
   } catch (error: any) {
     console.error("Error in image generation:", error);

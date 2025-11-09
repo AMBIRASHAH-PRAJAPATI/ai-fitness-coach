@@ -1,14 +1,14 @@
 import { getMotivationQuote } from '@/lib/motivationQuoteService';
 import { NextResponse } from 'next/server';
 
-export const dynamic = "force-static";
-// this will revalidate the data afetr each 60s the data will be updated 
-// and for 60 sec it serve cached data and then update
-export const revalidate = 60;
+// This will revalidate the data after each hour (3600s).
+// For 1 hour, it will serve cached data, then update.
+export const revalidate = 3600;
+
 export async function GET() {
   try {
-    // const motivationQuote = await getMotivationQuote();
-    return NextResponse.json({ motivationQuote:"aa" });
+    const motivationQuote = await getMotivationQuote();
+    return NextResponse.json({ quote: motivationQuote });
   } catch (error: any) {
     console.error("Error in motivation quote:", error);
     return NextResponse.json(

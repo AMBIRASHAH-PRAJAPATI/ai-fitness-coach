@@ -1,13 +1,19 @@
 'use client';
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 
 export default function LoadingModal({ open }: { open: boolean }) {
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" showCloseButton={false}>
+        <DialogHeader className="sr-only">
+          <DialogTitle>Generating Plan</DialogTitle>
+          <DialogDescription>
+          Hang tight! Your personalized fitness journey is being crafted just for you — designed to inspire, challenge, and transform.
+          </DialogDescription>
+        </DialogHeader>
         <div className="flex flex-col items-center space-y-6 py-8">
           <motion.div
             animate={{ rotate: 360 }}
@@ -17,10 +23,10 @@ export default function LoadingModal({ open }: { open: boolean }) {
           <div className="space-y-2 text-center">
             <h3 className="font-semibold">Generating Your Plan...</h3>
             <p className="text-sm text-muted-foreground">
-              Our AI is crafting your personalized fitness journey.
+            Hang tight! Your personalized fitness journey is being crafted just for you — designed to inspire, challenge, and transform.
             </p>
           </div>
-          <Progress value={75} className="w-full" />
+          <Progress value={75} className="w-full animate-pulse" />
         </div>
       </DialogContent>
     </Dialog>

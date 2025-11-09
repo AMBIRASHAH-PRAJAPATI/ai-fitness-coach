@@ -6,9 +6,7 @@ if (!process.env.GEMINI_API_KEY) {
 
 const geminiImageModel = "gemini-2.5-flash-image";
 
-// Generates an image using the "Nano Banana" model
 export const generateImage = async (prompt: string): Promise<string> => {
-    // Context for better images
     const augmentedPrompt = `Generate a realistic, high-quality, well-lit image for a fitness app. The image should be focused on the subject. Subject: ${prompt}`;
     try {
         const genAI = new GoogleGenAI({ apiKey: process.env.API_KEY });

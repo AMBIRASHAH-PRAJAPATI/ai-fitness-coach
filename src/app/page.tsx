@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,29 +15,57 @@ import { useFormSteps } from "./hooks/useFormSteps";
 import { useRouter } from "next/navigation";
 import { formSchema, FormData, FitnessPlan } from "@/lib/types";
 import QuoteSkeleton from "@/components/QuoteSkeleton";
+import FormSkeleton from "@/components/form/FormSkeleton";
+
+const emptyDefaults: FormData = {
+  name: "",
+  age: "" as any,
+  gender: "" as any,
+  height: "" as any,
+  weight: "" as any,
+  fitnessGoal: "" as any,
+  fitnessLevel: "" as any,
+  workoutLocation: "" as any,
+  dietaryPreference: "" as any,
+  medicalHistory: "",
+  stressLevel: "" as any,
+};
 
 export default function Home() {
   const { step, next, prev } = useFormSteps();
   const [loading, setLoading] = useState(false);
+  const [isFormInitialized, setIsFormInitialized] = useState(false);
   const router = useRouter();
-
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      age: 25,
-      gender: "male",
-      height: 170,
-      weight: 70,
-      fitnessGoal: "weight_loss",
-      fitnessLevel: "beginner",
-      workoutLocation: "home",
-      dietaryPreference: "non-veg",
-      medicalHistory: "",
-      stressLevel: "medium",
-    },
   });
+  useEffect(() => {
+    const storedData = localStorage.getItem("formData");
+    let initialValues = emptyDefaults;
 
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        initialValues = { ...emptyDefaults, ...parsedData };
+      } catch (e) {
+        console.error("Failed to parse form data, using empty defaults", e);
+      }
+    }
+    form.reset(initialValues);
+    setIsFormInitialized(true);
+  }, [form]);
+  const handleNext = async () => {
+    let fields: (keyof FormData)[] = [];
+    if (step === 1) {
+      fields = ["name", "age", "gender"];
+    } else if (step === 2) {
+      fields = ["height", "weight", "fitnessGoal", "fitnessLevel", "workoutLocation", "dietaryPreference"];
+    }
+    const isStepValid = await form.trigger(fields);
+    if (isStepValid) {
+      next();
+    }
+  };
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
@@ -46,27 +74,40 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       if (!res.ok) throw new Error("Failed to generate plan");
-
       const plan: FitnessPlan = await res.json();
       localStorage.setItem("fitnessPlan", JSON.stringify(plan));
+      localStorage.setItem("fitnessUserName", data.name);
+      localStorage.setItem("formData", JSON.stringify(data));
       router.push("/plan");
     } catch (err) {
+      console.error("Failed to generate plan:", err);
       alert("Sorry, something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isFormInitialized) {
+    return (
+      <>
+        <Suspense fallback={<QuoteSkeleton />}>
+          <DailyQuoteCard />
+        </Suspense>
+        <div className="max-w-2xl mx-auto bg-card text-card-foreground rounded-xl border p-6 shadow-sm">
+          <FormSkeleton />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-<Suspense fallback={<QuoteSkeleton />}>
-  <DailyQuoteCard />
-</Suspense>
-      <div className="max-w-2xl mx-auto">
+      <Suspense fallback={<QuoteSkeleton />}>
+        <DailyQuoteCard />
+      </Suspense>
+      <div className="max-w-2xl mx-auto bg-card text-card-foreground rounded-xl border p-6 shadow-sm">
         <ProgressSteps current={step} />
-
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <AnimatePresence mode="wait">
             {step === 1 && (
@@ -85,7 +126,6 @@ export default function Home() {
               </motion.div>
             )}
           </AnimatePresence>
-
           <div className="flex justify-between mt-8">
             {step > 1 && (
               <Button type="button" variant="outline" onClick={prev}>
@@ -93,7 +133,10 @@ export default function Home() {
               </Button>
             )}
             {step < 3 ? (
-              <Button type="button" onClick={next} className="ml-auto">
+              <Button type="button" onClick={(e) => {
+                e.preventDefault()
+                handleNext()
+              }} className="ml-auto">
                 Next
               </Button>
             ) : (
@@ -104,7 +147,6 @@ export default function Home() {
           </div>
         </form>
       </div>
-
       <LoadingModal open={loading} />
     </>
   );

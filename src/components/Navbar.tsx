@@ -17,7 +17,6 @@ export default function Navbar() {
           <Dumbbell className="h-6 w-6" />
           <span>AI Fitness Coach</span>
         </Link>
-
         <div className="flex items-center gap-4">
           {isPlanPage && (
             <Button variant="ghost" size="sm" asChild>
