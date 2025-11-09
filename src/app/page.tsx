@@ -29,7 +29,7 @@ const emptyDefaults: FormData = {
   workoutLocation: "" as any,
   dietaryPreference: "" as any,
   medicalHistory: "",
-  stressLevel: "" as any,
+  stressLevel: undefined,
 };
 
 export default function Home() {
