@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { formSchema, FormData, FitnessPlan } from "@/lib/types";
 import QuoteSkeleton from "@/components/QuoteSkeleton";
 import FormSkeleton from "@/components/form/FormSkeleton";
+import { fetchAndSavePlan } from "@/lib/planApi";
 
 const emptyDefaults: FormData = {
   name: "",
@@ -69,16 +70,7 @@ export default function Home() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/generate-plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to generate plan");
-      const plan: FitnessPlan = await res.json();
-      localStorage.setItem("fitnessPlan", JSON.stringify(plan));
-      localStorage.setItem("fitnessUserName", data.name);
-      localStorage.setItem("formData", JSON.stringify(data));
+      await fetchAndSavePlan(data);
       router.push("/plan");
     } catch (err) {
       console.error("Failed to generate plan:", err);

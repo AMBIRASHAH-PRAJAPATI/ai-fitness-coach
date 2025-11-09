@@ -14,7 +14,7 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default function DaySelector({ days, active, onSelect }: DaySelectorProps) {
   return (
-    <div className="flex flex-wrap gap-2 mb-6 justify-center">
+    <div className="flex flex-wrap gap-2 mt-2 mb-6 justify-center">
       {days.map((day) => (
         <motion.div
           key={day}

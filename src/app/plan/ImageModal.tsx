@@ -33,7 +33,6 @@ export default function ImageModal({
         })
         .catch(err => console.error("Error fetching image:", err))
         .finally(() => setIsLoading(false));
-        console.error("May be API limit exceeded");
     }
   }, [open, title]);
 

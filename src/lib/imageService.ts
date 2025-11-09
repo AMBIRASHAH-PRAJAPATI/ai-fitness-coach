@@ -29,6 +29,6 @@ export const generateImage = async (prompt: string): Promise<string> => {
         throw new Error("No image was generated.");
     } catch (e) {
         console.error("Error while generating image:", e);
-        throw new Error("'Sorry, something went wrong while generating image. Please try again.");
+        throw new Error(`Sorry, something went wrong while generating image. Please try again.: ${e}`);
     }
 };
